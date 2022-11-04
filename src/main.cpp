@@ -1,24 +1,29 @@
 #include <Arduino.h>
+#include "drivers/DriversManager.h"
 
-#define LED_PIN 2
-#define BUTTON 3
+#define IR_VCC 8
+#define IR_GRD 9
+#define IR_OUT 10
+
+// DriversManager driverManager;
+IRSensors irSensors;
 
 void setup() {
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(BUTTON, INPUT_PULLUP);
+  pinMode(IR_VCC, OUTPUT);
+  pinMode(IR_GRD, OUTPUT);
+  pinMode(IR_OUT, INPUT);
   Serial.begin(9600);
+  irSensors = IRSensors(3, 4, 5);
+  // driverManager.loadDriver(DriversManager::SIMPLE_FORWARD);
 }
 
-int old_state = 1;
-int led_state = 0;
-
 void loop() {
-  digitalWrite(LED_PIN, led_state);
-  int new_state = digitalRead(BUTTON);
-  if (old_state == 1 && new_state == 0) {
-    led_state = !led_state;
-    Serial.print("switching");
-  }
+  digitalWrite(IR_VCC, HIGH);
+  digitalWrite(IR_GRD, LOW);
+  int result = digitalRead(IR_OUT);
+  Serial.print("State = ");
+  Serial.print(result);
+  Serial.print("\n");
   delay(100);
-  old_state = new_state;
+  // driverManager.loop();
 }
